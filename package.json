@@ -1,0 +1,27 @@
+{
+  "name": "mongoscrape",
+  "version": "1.0.0",
+  "description": "scraping and using mongo db",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OokamiSieren/MongoScrape.git"
+  },
+  "author": "diana",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OokamiSieren/MongoScrape/issues"
+  },
+  "homepage": "https://github.com/OokamiSieren/MongoScrape#readme",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "cheerio": "^1.0.0-rc.3",
+    "express": "^4.17.1",
+    "express-handlebars": "^3.1.0",
+    "mongoose": "^5.6.1"
+  }
+}
