@@ -1,25 +1,32 @@
 // Dependencies
-var express = require ("express");
-var mongoose = require ("mongoose");
-var axios = require ("axios");
-var cheerio = require ("cheerio");
- var handlebars = require("handlebars");
- var logger = require ("morgan");
+var express = require("express");
+var mongoose = require("mongoose");
+var axios = require("axios");
+var cheerio = require("cheerio");
+var exphbs = require("express-handlebars");
+var logger = require("morgan");
+// initalize express
+var app = express();
 
+// set handlebars
+app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
+// app.get("/", function (req, res) {
+//   res.render("index");
+// }); this didn't help
 
 //require all models
- var db = require("./models");
+var db = require("./models");
 
 var PORT = process.env.PORT || 3000;
 
-// initalize express
-var app = express();
+
 
 //middleware
 // morgan logger logs requests
 app.use(logger("dev"));
 //parse request body as JSON
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Make the public a static folder
@@ -27,47 +34,55 @@ app.use(express.static("public"));
 
 // If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/myoniondb";
-mongoose.connect(MONGODB_URI,{useNewUrlParser:true});
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 // Routes
 // a get route for scraping the onion website
-app.get("/scrape", function(req, res) {    //use axios to get body of html
-    axios.get("https://www.theonion.com/").then(function(response) {
-        //use cheerio to save it
-        var $ = cheerio.load(response.data);
-       
-        $("article").each(function(i, element) {
-            //get the title text and links for the articles and save them to results
-            var results = {};
-            results.title = $(this).children().text();
-            results.link = $(this).find("a").attr("href");
-             results.image = $(this).find("img").attr("src");
-           // create a new article with the results 
-             db.Article.create(results).then(function(dbArticle) {
-                console.log(dbArticle);
-             })
-            .catch(function(err) {
-                console.log(err);
-             });
-            console.log(results);
-            });   
-        });
-        
-    });
+app.get("/", function(req, res) {
+  res.render("index")
+  //use axios to get body of html
+  axios.get("https://www.theonion.com/").then(function(response) {
+    //use cheerio to save it
+    var $ = cheerio.load(response.data);
 
-    // Route for getting all of the articles from the database
-    app.get("/articles",function(req,res) {
-        db.Article.find({}).then(function(dbArticle) {
-            res.json(dbArticle);
+    $("article").each(function(i, element) {
+      //get the title text and links for the articles and save them to results
+      var results = {};
+      results.title = $(this)
+        .children()
+        .text();
+      results.link = $(this)
+        .find("a")
+        .attr("href");
+      results.image = $(this)
+        .find("img")
+        .attr("src");
+      // create a new article with the results
+      db.Article.create(results)
+        .then(function(dbArticle) {
+          console.log(dbArticle);
         })
         .catch(function(err) {
-            res.json(err);
+          console.log(err);
         });
+      console.log(results);
     });
+  });
+});
 
-    //finish routes etc
+// Route for getting all of the articles from the database
+app.get("/articles", function(req, res) {
+  db.Article.find({})
+    .then(function(dbArticle) {
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
+});
+
+//finish routes etc
 // Start the server
 app.listen(PORT, function() {
-    console.log("App running on port " + PORT + "!");
-  });
-  
+  console.log("App running on port " + PORT + "!");
+});
