@@ -8,7 +8,8 @@ var cheerio = require ("cheerio");
 
 
 //require all models
-// var db = require("./models");
+ var db = require("./models");
+
 var PORT = process.env.PORT || 3000;
 
 // initalize express
@@ -36,21 +37,32 @@ app.get("/scrape", function(req, res) {    //use axios to get body of html
         var $ = cheerio.load(response.data);
        
         $("article").each(function(i, element) {
+            //get the title text and links for the articles and save them to results
             var results = {};
             results.title = $(this).children().text();
             results.link = $(this).find("a").attr("href");
              results.image = $(this).find("img").attr("src");
-           
-            // db.Article.create(results).then(function(dbArticle) {
-            //     console.log(dbArticle);
-            // })
-            // .catch(function(err) {
-            //     console.log(err);
-            // });
+           // create a new article with the results 
+             db.Article.create(results).then(function(dbArticle) {
+                console.log(dbArticle);
+             })
+            .catch(function(err) {
+                console.log(err);
+             });
             console.log(results);
             });   
         });
         
+    });
+
+    // Route for getting all of the articles from the database
+    app.get("/articles",function(req,res) {
+        db.Article.find({}).then(function(dbArticle) {
+            res.json(dbArticle);
+        })
+        .catch(function(err) {
+            res.json(err);
+        });
     });
 
     //finish routes etc
