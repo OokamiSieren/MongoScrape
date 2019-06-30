@@ -2,3 +2,11 @@
     background-image: url("../images/onion.jpg");
     background-blend-mode:overlay;
 }
+body {
+    background-image: url("../images/laughingonion.png");
+    background-size: contain;
+    
+}
+p{
+    font-size: 12px;
+}

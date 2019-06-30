@@ -49,15 +49,13 @@ app.get("/", function(req, res) {
       //get the title text and links for the articles and save them to results
       var results = {};
       results.title = $(this)
-        .children()
+        .find("h1")
         .text();
       results.link = $(this)
+        .find("figure")
         .find("a")
         .attr("href");
-      results.image = $(this)
-        .find("img")
-        .attr("src");
-      // create a new article with the results
+      //  create a new article with the results
       db.Article.create(results)
         .then(function(dbArticle) {
           console.log(dbArticle);
@@ -72,6 +70,7 @@ app.get("/", function(req, res) {
 
 // Route for getting all of the articles from the database
 app.get("/articles", function(req, res) {
+
   db.Article.find({})
     .then(function(dbArticle) {
       res.json(dbArticle);
