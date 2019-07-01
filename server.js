@@ -79,8 +79,28 @@ app.get("/articles", function(req, res) {
       res.json(err);
     });
 });
+// update articles that get saved
+app.post("/articles/saved/:id", function(req, res) {
+  db.Article
+      .update({ _id: req.params.id }, { saved: true })
+      .then(function(dbArticle) {
+          res.json(dbArticle);
+      })
+      .catch(function(err) {
+          res.json(err);
+      });
+});
+// get saved articles from database
+app.get("/saved", function(req, res) {
+  // render saved page
+  res.render("saved");
+ db.Article.find({saved:true}).then(function(dbArticle) {
+   res.json(dbArticle);
+ }).catch(function(err) {
+   res.json(err)
+ });
+});
 
-//finish routes etc
 // Start the server
 app.listen(PORT, function() {
   console.log("App running on port " + PORT + "!");

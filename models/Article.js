@@ -6,15 +6,19 @@ var Schema = mongoose.Schema;
 
 //make a new userschema object
 var ArticleSchema = new Schema({
- 
   title: {
     type: String,
     required: true
   },
- 
+
   link: {
     type: String,
     required: true
+  },
+
+  saved: {
+    type: Boolean,
+    default: false
   },
   //note association
   note: {
